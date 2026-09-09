@@ -1,0 +1,25 @@
+#include <stdio.h>
+#include <pcap/pcap.h>
+
+int main(void)
+{
+    char errbuf[PCAP_ERRBUF_SIZE];
+
+    pcap_t *p = pcap_open_live("wlan0", 65535, 1, 1000, errbuf);
+
+    if (!p) {
+        printf("pcap: %s\n", errbuf);
+        return 1;
+    }
+
+    printf("Capturing on wlan0...\n");
+
+    struct pcap_pkthdr *hdr;
+    const unsigned char *data;
+
+    while (pcap_next_ex(p, &hdr, &data) >= 0)
+        printf("%6u bytes\n", hdr->len);
+
+    pcap_close(p);
+    return 0;
+}
